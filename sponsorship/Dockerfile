@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.11-alpine
+FROM python:3.11
 
 # Set environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -12,11 +12,11 @@ WORKDIR /usr/src/app
 COPY ./requirements.txt /usr/src/app/
 
 # Install any needed packages specified in requirements.txt
-RUN apk update \
-    && apk add --no-cache postgresql-libs \
-    && apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev \
+RUN apt-get update -y \
+    && apt-get install -y postgresql libpq-dev gcc \
     && pip install --no-cache-dir -r requirements.txt \
-    && apk --purge del .build-deps
+    && apt-get remove -y gcc libpq-dev \
+    && apt-get autoremove -y
 
 # Copy the current directory contents into the container at /usr/src/app/
 COPY . /usr/src/app/
